@@ -143,7 +143,7 @@ def find_by_id(user_id, session):
     # Находим ближайшее значение по дате рождения
     nst_val = nearest(list_of_birthdate, int(usr_birthdate[0].replace("-", "")))
     br_date = [str(nst_val)[0: 4], str(nst_val)[4: 6], str(nst_val)[6: 8]]
-    query = session.query(Athelete).filter(Athelete.height == "-".join(br_date))
+    query = session.query(Athelete).filter(Athelete.birthdate == "-".join(br_date))
     nst_birthdate = ["%s с датой рождения: %s." % (athelete.name, athelete.birthdate) for athelete in query]
 
     return (nst_height[0], nst_birthdate[0])
