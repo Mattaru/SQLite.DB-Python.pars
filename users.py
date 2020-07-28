@@ -45,8 +45,11 @@ def add_user():
     """
     first_name = input("Введите имя: ")
     last_name = input("Введите фамилию: ")
-    gender = input("Введите пол Male/Female: ")
+    gender = input("Введите пол: ")
     email = input("Укажите адресс электронной почты: ")
+    while not valid_email(email):
+        print("Введенные данные не являются адрессом электронной почты.")
+        email = input("Укажите адресс электронной почты: ")
     # Обратите внимание на способ ввода даты рождения и роста
     birthdate = input("Укажите дату рождения в формате год-месяц-день (например: 1970-01-13): ")
     while not bd_parser(birthdate):
@@ -79,7 +82,7 @@ def bd_parser(birthdate):
                 return True
             else:
                 return False
-        if len(tester[0]) == 4 and len(tester[1]) == 2 and len(tester[2] == 2):
+        if len(tester[0]) == 4 and len(tester[1]) == 2 and len(tester[2] == 2) and int(tester[1]) <= 12:
             return True
         else:
             return False
@@ -101,6 +104,24 @@ def height_parser(height):
             return False
     else:
         return False
+
+def valid_email(email):
+    """
+    Проверяет похожа ли строка на адресс электронной почты. Если да, то возвращает True, иначе False.
+    """
+    sp_dot = email.split(".")
+    sp_dog = email.split("@")
+    if email.count("@") < 1 or email.count(".") < 1:
+        return False
+    if sp_dot[0].count("@") > 1:
+        return False
+    for ind in range(1, len(sp_dot)):
+        if sp_dot[ind].count("@") != 0:
+            return False
+    for ind1 in range(0, -1):
+        if sp_dog[ind1].count(".") != 0:
+            return False
+    return True
 
 def find_user(user_name, session):
     """
@@ -124,7 +145,6 @@ def find_by_id(user_id, session):
     query = session.query(User).filter(User.id == user_id)
     usr_birthdate = [user.birthdate for user in query]
     usr_height = [user.height for user in query]
-
     # Составляем списки дат рождения атлетов и список их роста
     query_at = session.query(Athelete).all()
     list_of_birthdate = [athelete.birthdate for athelete in query_at]
@@ -135,11 +155,9 @@ def find_by_id(user_id, session):
     # Избавляемся от пустых значений
     for item in range(list_of_height.count(None)):
         list_of_height.remove(None)
-
     # Находим значение роста ближайшее к заданному
     query = session.query(Athelete).filter(Athelete.height == nearest(list_of_height, usr_height[0]))
     nst_height = ["%s с ростом: %s." % (athelete.name, athelete.height) for athelete in query]
-
     # Находим ближайшее значение по дате рождения
     nst_val = nearest(list_of_birthdate, int(usr_birthdate[0].replace("-", "")))
     br_date = [str(nst_val)[0: 4], str(nst_val)[4: 6], str(nst_val)[6: 8]]
