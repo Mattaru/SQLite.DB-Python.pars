@@ -56,10 +56,8 @@ def add_user():
     while not height_parser(height):
         print("Не корректный формат данных.")
         height = input("Укажите рост в метрах и сантиметрах через точку(например: 1.87): ")
-    user_id = str(uuid.uuid4())
 
     user = User(
-        id = user_id,
         first_name = first_name,
         last_name = last_name,
         gender = gender,
@@ -108,9 +106,9 @@ def find_user(user_name, session):
     """
     Запрашивает имя пользователя и в случае наличия этого имени в базе возвращает его id
     """
-    query = session.query(User).filter(User.name == user_name)
+    query = session.query(User).filter(User.first_name == user_name)
     for user in query:
-        return "{} {} id - {}".format(user.first_name, user.last_name, user.id)
+        return "{} {}\nid - {}\nemail - <{}>\ngender - {}\nheight - {}".format(user.first_name, user.last_name, user.id, user.email, user.gender, user.height)
 
 def nearest(list, value):
     """
@@ -124,9 +122,8 @@ def find_by_id(user_id, session):
     второго ближайшего по росту к пользователю.
     """
     query = session.query(User).filter(User.id == user_id)
-    for user in query:
-        usr_birthdate = user.birthdate
-        usr_height = user.height
+    usr_birthdate = [user.birthdate for user in query]
+    usr_height = [user.height for user in query]
 
     # Составляем списки дат рождения атлетов и список их роста
     query_at = session.query(Athelete).all()
@@ -140,11 +137,11 @@ def find_by_id(user_id, session):
         list_of_height.remove(None)
 
     # Находим значение роста ближайшее к заданному
-    query = session.query(Athelete).filter(Athelete.height == nearest(list_of_height, usr_height))
-    nst_height = ["%s с ростом: %s."%(athelete.name, athelete.height) for athelete in query]
+    query = session.query(Athelete).filter(Athelete.height == nearest(list_of_height, usr_height[0]))
+    nst_height = ["%s с ростом: %s." % (athelete.name, athelete.height) for athelete in query]
 
     # Находим ближайшее значение по дате рождения
-    nst_val = nearest(list_of_birthdate, int(usr_birthdate.replace("-", "")))
+    nst_val = nearest(list_of_birthdate, int(usr_birthdate[0].replace("-", "")))
     br_date = [str(nst_val)[0: 4], str(nst_val)[4: 6], str(nst_val)[6: 8]]
     query = session.query(Athelete).filter(Athelete.height == "-".join(br_date))
     nst_birthdate = ["%s с датой рождения: %s." % (athelete.name, athelete.birthdate) for athelete in query]
