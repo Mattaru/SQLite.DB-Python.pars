@@ -35,7 +35,6 @@ def db_connect():
     Создает подключение к базе данных
     """
     engine = sa.create_engine(SQLITE_PATH)
-    Base.metadata.create_all(engine)
     session = sessionmaker(engine)
     return session()
 
@@ -78,11 +77,9 @@ def bd_parser(birthdate):
     if birthdate.count("-") == 2:
         tester = birthdate.split("-")
         for test in tester:
-            if type(int(test)):
-                return True
-            else:
+            if not test.isdigit():
                 return False
-        if len(tester[0]) == 4 and len(tester[1]) == 2 and len(tester[2] == 2) and int(tester[1]) <= 12:
+        if len(tester[0]) == 4 and len(tester[1]) == 2 and len(tester[2]) == 2 and int(tester[1]) <= 12 and int(tester[2]) <= 31:
             return True
         else:
             return False
