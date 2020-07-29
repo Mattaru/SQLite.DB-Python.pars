@@ -1,4 +1,3 @@
-import uuid
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -139,14 +138,14 @@ def nearest(list, value):
 
 def find_by_id(user_id, session):
     """
-    Запрашивает ID пользователя и выводит на экран двух отлетов: одного ближайшего по дате рождения к пользователю,
+    Запрашивает ID пользователя и выводит на экран двух атлетов: одного ближайшего по дате рождения к пользователю,
     второго ближайшего по росту к пользователю.
     """
     query = session.query(User).filter(User.id == user_id)
     usr_birthdate = [user.birthdate for user in query]
     usr_height = [user.height for user in query]
     if usr_height == [] or usr_birthdate == []:
-        return ("Пользователя с таким ID не существует.", "")
+        return "Пользователя с таким ID не существует.", ""
     # Составляем списки дат рождения атлетов и список их роста
     query_at = session.query(Athelete).all()
     list_of_birthdate = [athelete.birthdate for athelete in query_at]
@@ -166,7 +165,7 @@ def find_by_id(user_id, session):
     query = session.query(Athelete).filter(Athelete.birthdate == "-".join(br_date))
     nst_birthdate = ["Схожий атлет по дате рождения - %s с датой рождения: %s." % (athelete.name, athelete.birthdate) for athelete in query]
 
-    return (nst_height[0], nst_birthdate[0])
+    return nst_height[0], nst_birthdate[0]
 
 def main():
     """
