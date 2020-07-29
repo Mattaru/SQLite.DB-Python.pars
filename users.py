@@ -150,8 +150,8 @@ def main():
             print(item)
     elif request == "3":
         user_id = input("Введите ID пользователя для поиска схожих данных с спорцменами: ")
-        coincidence, coincidence1 = af.find_by_id(user_id, session)
-        print("{}\n{}".format(coincidence, coincidence1))
+        coincidence, coincidence1, usr_data, usr_data_1 = af.find_by_id(user_id, session)
+        print("{}\n{}\n{}\n{}".format(usr_data, usr_data_1, coincidence, coincidence1))
     else:
         print("Выбрана несуществующая команда")
 

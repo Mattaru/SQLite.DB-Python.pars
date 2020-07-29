@@ -45,7 +45,7 @@ def find_by_id(user_id, session):
     usr_birthdate = [user.birthdate for user in query]
     usr_height = [user.height for user in query]
     if usr_height == [] or usr_birthdate == []:
-        return "Пользователя с таким ID не существует.", ""
+        return "Пользователя с таким ID не существует.", "", "", ""
     # Составляем спискок дат рождения атлетов и список их роста
     query_at = session.query(Athelete).all()
     list_of_birthdate = [athelete.birthdate for athelete in query_at]
@@ -65,4 +65,4 @@ def find_by_id(user_id, session):
     query = session.query(Athelete).filter(Athelete.birthdate == "-".join(br_date))
     nst_birthdate = ["Схожий атлет по дате рождения - %s с датой рождения: %s." % (athelete.name, athelete.birthdate) for athelete in query]
 
-    return nst_height[0], nst_birthdate[0]
+    return nst_height[0], nst_birthdate[0], "Дата рождения пользователя: %s" %(usr_birthdate[0]), "Рост пользователя: %s" %(usr_height[0])
