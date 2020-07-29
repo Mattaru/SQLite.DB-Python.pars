@@ -125,8 +125,8 @@ def find_user(user_name, session):
     Запрашивает имя пользователя и в случае наличия этого имени в базе возвращает его id
     """
     query = session.query(User).filter(User.first_name == user_name)
-    for user in query:
-        return "{} {}\nid - {}\nemail - <{}>\ngender - {}\nheight - {}\nbirthdate - {}".format(user.first_name, user.last_name, user.id, user.email, user.gender, user.height, user.birthdate)
+    users = ["%s %s - id: %s" % (user.first_name, user.last_name, user.id) for user in query]
+    return users
 
 def main():
     """
@@ -136,7 +136,7 @@ def main():
     request = input("Добро пожаловать!\n"
           "Выберите действие которое хотите совершить:\n"
           "1 - добавить нового пользователя.\n"
-          "2 - найти уже существующего пользователя.\n"
+          "2 - найти уже существующего пользователя и показать его id.\n"
           "3 - ввести id пользователя и вывести двух спорцменов с похожими параметрами даты рождения и роста.\n")
     if request == "1":
         user = add_user()
@@ -146,7 +146,8 @@ def main():
     elif request == "2":
         user_name = input("Введите имя пользователя, id которого хотите найти: ")
         user = find_user(user_name, session)
-        print(user)
+        for item in user:
+            print(item)
     elif request == "3":
         user_id = input("Введите ID пользователя для поиска схожих данных с спорцменами: ")
         coincidence, coincidence1 = af.find_by_id(user_id, session)
