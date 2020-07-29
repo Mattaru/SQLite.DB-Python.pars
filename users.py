@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import find_athlete as af
 
 SQLITE_PATH = "sqlite:///sochi_athletes.sqlite3"
 Base = declarative_base()
@@ -128,44 +129,7 @@ def find_user(user_name, session):
     """
     query = session.query(User).filter(User.first_name == user_name)
     for user in query:
-        return "{} {}\nid - {}\nemail - <{}>\ngender - {}\nheight - {}".format(user.first_name, user.last_name, user.id, user.email, user.gender, user.height)
-
-def nearest(list, value):
-    """
-    Находит наиближайшее значение к заданному
-    """
-    return min(list, key = lambda i: abs(i - value))
-
-def find_by_id(user_id, session):
-    """
-    Запрашивает ID пользователя и выводит на экран двух атлетов: одного ближайшего по дате рождения к пользователю,
-    второго ближайшего по росту к пользователю.
-    """
-    query = session.query(User).filter(User.id == user_id)
-    usr_birthdate = [user.birthdate for user in query]
-    usr_height = [user.height for user in query]
-    if usr_height == [] or usr_birthdate == []:
-        return "Пользователя с таким ID не существует.", ""
-    # Составляем списки дат рождения атлетов и список их роста
-    query_at = session.query(Athelete).all()
-    list_of_birthdate = [athelete.birthdate for athelete in query_at]
-    list_of_height = [athelete.height for athelete in query_at]
-    # Обработаем формат дат для удобной проверки
-    for index in range(len(list_of_birthdate)):
-        list_of_birthdate[index] = int(list_of_birthdate[index].replace("-", ""))
-    # Избавляемся от пустых значений
-    for item in range(list_of_height.count(None)):
-        list_of_height.remove(None)
-    # Находим значение роста ближайшее к заданному
-    query = session.query(Athelete).filter(Athelete.height == nearest(list_of_height, usr_height[0]))
-    nst_height = ["Схожий атлет по росту - %s с ростом: %s." % (athelete.name, athelete.height) for athelete in query]
-    # Находим ближайшее значение по дате рождения
-    nst_val = nearest(list_of_birthdate, int(usr_birthdate[0].replace("-", "")))
-    br_date = [str(nst_val)[0: 4], str(nst_val)[4: 6], str(nst_val)[6: 8]]
-    query = session.query(Athelete).filter(Athelete.birthdate == "-".join(br_date))
-    nst_birthdate = ["Схожий атлет по дате рождения - %s с датой рождения: %s." % (athelete.name, athelete.birthdate) for athelete in query]
-
-    return nst_height[0], nst_birthdate[0]
+        return "{} {}\nid - {}\nemail - <{}>\ngender - {}\nheight - {}\nbirthdate - {}".format(user.first_name, user.last_name, user.id, user.email, user.gender, user.height, user.birthdate)
 
 def main():
     """
@@ -188,7 +152,7 @@ def main():
         print(user)
     elif request == "3":
         user_id = input("Введите ID пользователя для поиска схожих данных с спорцменами: ")
-        coincidence, coincidence1 = find_by_id(user_id, session)
+        coincidence, coincidence1 = af.find_by_id(user_id, session)
         print("{}\n{}".format(coincidence, coincidence1))
     else:
         print("Выбрана несуществующая команда")
